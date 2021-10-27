@@ -6,6 +6,9 @@ on:
       repository_name:
         required: true
         type: string
+      ref:
+        required: true
+        type: string
     secrets:
       token:
         required: true

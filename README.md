@@ -43,3 +43,6 @@ It needs the following secrets:
 * `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
+
+This workflow has one requirement of the repository using this, namely the package.json of the project should contain
+a `publish:package` command that calls the `npm publish` command.
