@@ -20,9 +20,11 @@ jobs:
   check-codestyle:
     uses: safeguardapp/reusable-workflows/.github/workflows/codestyle.yml@main
     with:
-      branch_name: 'main'
+      repository_name: ${{ github.repository }}
+      ref: ${{ github.ref }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
+      gh_package_registry_token: ${{ secrets.GH_PACKAGE_REGISTRY_PERSONAL_ACCESS_TOKEN }}
 ```
 
 For more information about reusable workflows head over to
@@ -30,19 +32,48 @@ the [documentation](https://docs.github.com/en/actions/learn-github-actions/reus
 
 ## Workflow documentation
 
-### publish_package
+### codestyle
 
-This workflow needs the following input:
+This workflow requires that the repository using this contains the following packages and commands.
+
+**Packages**
+
+* ESlint
+* Prettier
+
+**Commands**
+
+* `npm run lint`
+* `npm run prettier:check`
+
+The workflow expects the following in terms of input.
+
+**Expected input:**
 
 * `repository_name` the repository name in the format of `org/repository-name`
-* `branch_name` optional target branch to use, defaults to `main`
-* `version_increment_type` optional version bump type, if specified should one of the following 'patch | minor | major'
+* `ref` mandatory git reference to checkout
 
-It needs the following secrets:
+**Expected secrets:**
 
 * `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
 
-This workflow has one requirement of the repository using this, namely the package.json of the project should contain
-a `publish:package` command that calls the `npm publish` command.
+### publish_package
+
+This workflow requires that the repository using this contains a `publish:package` command that in turn should at least
+call the `npm publish` command.
+
+The workflow expects the following in terms of input.
+
+**Expected input:**
+
+* `repository_name` the repository name in the format of `org/repository-name`
+* `ref` optional git reference, defaults to `main`
+* `version_increment_type` optional version bump type, if specified should one of the following 'patch | minor | major'
+
+**Expected secrets:**
+
+* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
+* `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
+  registry
