@@ -27,3 +27,19 @@ jobs:
 
 For more information about reusable workflows head over to
 the [documentation](https://docs.github.com/en/actions/learn-github-actions/reusing-workflows).
+
+## Workflow documentation
+
+### publish_package
+
+This workflow needs the following input:
+
+* `repository_name` the repository name in the format of `org/repository-name`
+* `branch_name` optional target branch to use, defaults to `main`
+* `version_increment_type` optional version bump type, if specified should one of the following 'patch | minor | major'
+
+It needs the following secrets:
+
+* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
+* `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
+  registry
