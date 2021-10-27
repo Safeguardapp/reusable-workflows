@@ -1,0 +1,48 @@
+name: Publish package
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
+      version_increment_type:
+        required: true
+        type: string
+        default: 'minor'
+    secrets:
+      token:
+        required: true
+
+jobs:
+  Publish:
+    name: Publish new ${{ github.event.inputs.version_increment_type }} version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository_name }}
+          token: ${{ secrets.token }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15.14.x
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@safeguardapp"
+      - name: npm install
+        run: npm install
+      - name: npm publish
+        run: |
+          git config --global user.name 'SafeguardApp'
+          git config --global user.email 'info@safeguardapp.nl'
+
+          if [ "${{ github.event.inputs.version_increment_type }}" != "patch" ] && \
+            [ "${{ github.event.inputs.version_increment_type }}" != "minor" ] && \
+            [ "${{ github.event.inputs.version_increment_type }}" != "major" ]; then
+            echo "Invalid version increment type"
+            exit 1
+          fi
+
+          npm run publish:${{ github.event.inputs.version_increment_type }}
+          git push
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.token }}

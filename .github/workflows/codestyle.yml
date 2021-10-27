@@ -1,0 +1,61 @@
+name: Codestyle
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+      gh_package_registry_token:
+        required: true
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository_name }}
+          token: ${{ secrets.token }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@safeguardapp"
+          cache: 'npm'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
+
+      - name: Setup NPM
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repository_name }}
+          token: ${{ secrets.token }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@safeguardapp"
+          cache: 'npm'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
+
+      - name: Setup NPM
+        run: npm ci
+
+      - name: Run prettier
+        run: npm run prettier:check
