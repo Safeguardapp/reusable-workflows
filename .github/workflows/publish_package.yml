@@ -13,6 +13,8 @@ on:
     secrets:
       token:
         required: true
+      gh_package_registry_token:
+        required: true
 
 jobs:
   Publish:
@@ -23,13 +25,18 @@ jobs:
         with:
           repository: ${{ inputs.repository_name }}
           token: ${{ secrets.token }}
+
       - uses: actions/setup-node@v1
         with:
           node-version: 15.14.x
           registry-url: "https://npm.pkg.github.com/"
           scope: "@safeguardapp"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
+
       - name: npm install
         run: npm install
+
       - name: npm publish
         run: |
           git config --global user.name 'SafeguardApp'
