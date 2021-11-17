@@ -24,6 +24,8 @@ jobs:
   Publish:
     name: Publish new ${{ github.event.inputs.version_increment_type }} version
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,18 +33,14 @@ jobs:
           ref: ${{ github.event.inputs.branch_name }}
           token: ${{ secrets.token }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: 16.x
           registry-url: "https://npm.pkg.github.com/"
           scope: "@safeguardapp"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
 
-      - name: Setup NPM
-        run: |
-          echo $NODE_AUTH_TOKEN | sed 's/./& /g'
-          npm ci
+      - name: Install packages
+        run: npm ci
 
       - name: npm publish
         run: |
@@ -60,5 +58,4 @@ jobs:
           npm run publish:package
           git push --follow-tags
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.token }}
           GITHUB_TOKEN: ${{ secrets.token }}

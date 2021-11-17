@@ -19,6 +19,8 @@ jobs:
   lint:
     name: Linting
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,8 +33,6 @@ jobs:
           registry-url: "https://npm.pkg.github.com/"
           scope: "@safeguardapp"
           cache: 'npm'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
 
       - name: Setup NPM
         run: npm ci
@@ -42,6 +42,8 @@ jobs:
   prettier:
     name: Prettier
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -54,8 +56,6 @@ jobs:
           registry-url: "https://npm.pkg.github.com/"
           scope: "@safeguardapp"
           cache: 'npm'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
 
       - name: Setup NPM
         run: npm ci
