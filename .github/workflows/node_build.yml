@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  Test:
+  node_build:
     name: Test node application build
     runs-on: ubuntu-latest
     env:
