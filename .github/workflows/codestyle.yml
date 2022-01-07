@@ -2,13 +2,6 @@ name: Codestyle
 
 on:
   workflow_call:
-    inputs:
-      repository_name:
-        required: true
-        type: string
-      ref:
-        required: true
-        type: string
     secrets:
       token:
         required: true
@@ -24,7 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: ${{ inputs.repository_name }}
           token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2
@@ -47,7 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: ${{ inputs.repository_name }}
           token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2

@@ -2,14 +2,6 @@ name: Run node application tests
 
 on:
   workflow_call:
-    inputs:
-      repository_name:
-        required: true
-        type: string
-      branch_name:
-        required: false
-        type: string
-        default: 'main'
     secrets:
       token:
         required: true
@@ -26,8 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: ${{ inputs.repository_name }}
-          ref: ${{ github.event.inputs.branch_name }}
           token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2
