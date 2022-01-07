@@ -27,11 +27,7 @@ on:
 jobs:
   check-codestyle:
     uses: safeguardapp/reusable-workflows/.github/workflows/codestyle.yml@main
-    with:
-      repository_name: ${{ github.repository }}
-      ref: ${{ github.ref }}
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
       gh_package_registry_token: ${{ secrets.GH_PACKAGE_REGISTRY_PERSONAL_ACCESS_TOKEN }}
 ```
 
@@ -97,8 +93,14 @@ The workflow expects the following input.
 
 ## publish_package
 
-This workflow requires that the repository using this contains a `publish:package` command that in turn should at least
-call the `npm publish` command.
+This workflow runs the `npm run publish:package` command to publish the node package to the GitHub packages repository 
+, it also ups the version in the repository's `package.json` and it tags the release.
+
+The repository using this workflow is required to contain the following packages and commands.
+
+**Commands**
+
+* `npm run publish:package`
 
 The workflow expects the following input.
 
