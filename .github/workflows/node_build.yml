@@ -3,8 +3,6 @@ name: Test node application build
 on:
   workflow_call:
     secrets:
-      token:
-        required: true
       gh_package_registry_token:
         required: true
 
@@ -17,8 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2
         with:

@@ -59,7 +59,6 @@ The workflow expects the following input.
 
 **Expected secrets:**
 
-* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
 
@@ -76,7 +75,6 @@ The workflow expects the following input.
 
 **Expected secrets:**
 
-* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
 
@@ -93,7 +91,6 @@ The workflow expects the following input.
 
 **Expected secrets:**
 
-* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
 
@@ -112,6 +109,5 @@ The workflow expects the following input.
 
 **Expected secrets:**
 
-* `token` here you should provide the `secrets.GITHUB_TOKEN` from the parent workflow
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry

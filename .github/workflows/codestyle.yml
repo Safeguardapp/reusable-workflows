@@ -3,8 +3,6 @@ name: Codestyle
 on:
   workflow_call:
     secrets:
-      token:
-        required: true
       gh_package_registry_token:
         required: true
 
@@ -16,8 +14,6 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2
         with:
@@ -38,8 +34,6 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.token }}
 
       - uses: actions/setup-node@v2
         with:
