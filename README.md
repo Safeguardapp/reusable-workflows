@@ -9,6 +9,8 @@ can be made publicly accessible.
 * [How to use](#how-to-use)
 * [Workflow documentation](#workflow-documentation)
   + [codestyle](#codestyle)
+  + [jira_handle_code_review](#jira_handle_code_review)
+  + [jira_request_code_review](#jira_request_code_review)
   + [node_build](#node_build)
   + [node_test](#node_test)
   + [publish_package](#publish_package)
@@ -57,6 +59,39 @@ The workflow expects the following input.
 
 * `gh_package_registry_token` should contain a personal access token that allows read access to the GitHub package
   registry
+
+## jira_handle_code_review
+
+This workflow can be used to automatically transition JIRA tickets from `In progress` to `Code Review`, also adds a comment to the ticket with the PR url.
+
+The workflow expects the following input.
+
+**Expected input:**
+
+* `ref` GitHub ref to take the JIRA issue id from
+
+**Expected secrets:**
+
+* `JIRA_BASE_URL` JIRA base url
+* `JIRA_USER_EMAIL` JIRA user email
+* `JIRA_API_TOKEN` JIRA user API token
+
+## jira_request_code_review
+
+This workflow can be used to automatically approve or reject JIRA tickets that are in `Code Review`, also adds a comment to the ticket that 
+states who approved/rejected the PR.
+
+The workflow expects the following input.
+
+**Expected input:**
+
+* `ref` GitHub ref to take the JIRA issue id from
+
+**Expected secrets:**
+
+* `JIRA_BASE_URL` JIRA base url
+* `JIRA_USER_EMAIL` JIRA user email
+* `JIRA_API_TOKEN` JIRA user API token
 
 ## node_build
 

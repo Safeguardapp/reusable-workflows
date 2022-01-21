@@ -1,0 +1,45 @@
+name: Transition ticket to Code Review
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+    secrets:
+      JIRA_BASE_URL:
+        required: true
+      JIRA_USER_EMAIL:
+        required: true
+      JIRA_API_TOKEN:
+        required: true
+
+jobs:
+  transition-ticket:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Identify issue
+        id: context
+        run: |
+          branchName="${{ inputs.ref }}"
+          echo "::set-output name=ticket_id::`echo $branchName | grep -Eo '[\s|]?([A-Z]+-[0-9]+)[\s:|]?[\s|]?'`"
+
+      - name: JIRA Login
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      - name: Comment on issue
+        uses: atlassian/gajira-comment@master
+        with:
+          issue: ${{ steps.context.outputs.ticket_id }}
+          comment: ${{ github.event.sender.login }} opened pull request ${{ github.event.pull_request.html_url }}
+
+      - name: Transition issue
+        uses: atlassian/gajira-transition@master
+        with:
+          issue: ${{ steps.context.outputs.ticket_id }}
+          transition: "Needs Code Review"
