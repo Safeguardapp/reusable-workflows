@@ -23,7 +23,7 @@ jobs:
           scope: "@safeguardapp"
 
       - name: Install node packages
-        run: npm ci
+        run: npm ci --force
 
       - name: Run test command
         run: npm run test

@@ -23,7 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: Setup NPM
-        run: npm ci
+        run: npm ci --force
 
       - name: Run linting
         run: npm run lint
