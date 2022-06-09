@@ -43,7 +43,7 @@ jobs:
           cache: 'npm'
 
       - name: Setup NPM
-        run: npm ci
+        run: npm ci --force
 
       - name: Run prettier
         run: npm run prettier:check
