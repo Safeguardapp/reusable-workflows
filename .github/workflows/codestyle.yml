@@ -13,9 +13,9 @@ jobs:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
           registry-url: "https://npm.pkg.github.com/"
@@ -33,9 +33,9 @@ jobs:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
           registry-url: "https://npm.pkg.github.com/"
