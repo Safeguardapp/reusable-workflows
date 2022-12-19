@@ -2,6 +2,10 @@ name: Run node application tests
 
 on:
   workflow_call:
+    inputs:
+      workspace:
+        required: false
+        type: string
     secrets:
       gh_package_registry_token:
         required: true
@@ -26,4 +30,9 @@ jobs:
         run: npm ci --force
 
       - name: Run test command
+        if: "${{ inputs.workspace == '' }}"
         run: npm run test
+
+      - name: Run test command in workspace ${{ inputs.workspace }}
+        if: "${{ inputs.workspace != '' }}"
+        run: npm run test -w ${{ inputs.workspace }}
