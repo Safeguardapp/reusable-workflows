@@ -31,9 +31,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Callers that declare their Node version in .nvmrc get that version. The
+      # ones without the file stay on 18.x until they add it.
+      - name: Resolve the Node version
+        id: node_version
+        run: |
+          if [ -f .nvmrc ]; then
+            echo "version=$(tr -d '[:space:]' < .nvmrc)" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=18.x" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: ${{ steps.node_version.outputs.version }}
           registry-url: "https://npm.pkg.github.com/"
           scope: "@safeguardapp"
 
