@@ -14,6 +14,7 @@ jobs:
   node_test:
     name: Run node application tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
 

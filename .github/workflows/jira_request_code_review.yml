@@ -18,6 +18,7 @@ jobs:
   transition-ticket:
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Identify issue
         id: context

@@ -19,6 +19,7 @@ jobs:
   Publish:
     name: Publish new ${{ github.event.inputs.version_increment_type }} version
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
