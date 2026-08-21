@@ -29,6 +29,7 @@ jobs:
   approve-ticket:
     if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Identify issue
         id: context
@@ -58,6 +59,7 @@ jobs:
   reject-ticket:
     if: github.event.review.state == 'rejected'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Identify issue
         id: context
