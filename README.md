@@ -51,6 +51,9 @@ the following packages and commands.
 * `npm run lint`
 * `npm run prettier:check`
 
+The Lint job also runs `npm run build --if-present` after the lint, so a repository whose `build` script runs `tsc`
+gets typechecked in the Lint job. Without a `build` script, the step does nothing.
+
 The workflow expects the following input.
 
 **Expected secrets:**
