@@ -36,7 +36,9 @@ jobs:
           set -euo pipefail
           conflicts=()
 
-          for branch in $(gh api "repos/$REPO/git/matching-refs/heads/cycle/" --jq '.[].ref | sub("^refs/heads/"; "")'); do
+          # Assigned first: a failing command inside the for list would not trip set -e.
+          branches=$(gh api "repos/$REPO/git/matching-refs/heads/cycle/" --jq '.[].ref | sub("^refs/heads/"; "")')
+          for branch in $branches; do
             status=$(gh api "repos/$REPO/compare/develop...$branch" --jq .status)
             if [ "$status" = behind ] || [ "$status" = identical ]; then
               echo "$branch: already merged back into develop, skipping"
@@ -77,4 +79,4 @@ jobs:
           fi
           jq -n --arg text "$TEXT" \
               '{username: "Cycle branch merge", icon_emoji: ":x:", attachments: [{color: "danger", text: $text}]}' \
-            | curl -sS -X POST -H 'Content-type: application/json' --data @- "$SLACK_WEBHOOK_URL"
+            | curl -sS --fail-with-body -X POST -H 'Content-type: application/json' --data @- "$SLACK_WEBHOOK_URL"
