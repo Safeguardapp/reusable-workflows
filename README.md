@@ -110,7 +110,9 @@ The job runs in the environment `cycle-merge`, and that is where the app's crede
 branches to `develop`. Never store the key as a repository secret: any workflow on any branch can read those, so every
 writer could push past the ruleset.
 
-Call it on a schedule from the default branch; scheduled workflows only run there.
+Call it on a schedule from the default branch; scheduled workflows only run there. Pin it to a commit SHA rather than
+`@main`: whatever this workflow runs can read the app key, so a change to it should only reach a caller through a
+reviewed PR in that caller.
 
 ```yaml
 name: Merge develop into cycle branches
@@ -122,7 +124,7 @@ on:
 
 jobs:
   merge:
-    uses: safeguardapp/reusable-workflows/.github/workflows/merge_develop_into_cycle.yml@main
+    uses: safeguardapp/reusable-workflows/.github/workflows/merge_develop_into_cycle.yml@<commit sha>
     secrets:
       slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 ```
