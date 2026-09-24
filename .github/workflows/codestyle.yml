@@ -49,8 +49,8 @@ jobs:
         if: "${{ inputs.workspace != '' }}"
         run: npm run lint -w ${{ inputs.workspace }}
 
-      # The build is the typecheck: tsc -b follows the project references,
-      # which tsc --noEmit per folder does not (SG-10371).
+      # Typechecks wherever the caller's build runs tsc -b, which follows the
+      # project references that tsc --noEmit per folder misses (SG-10371).
       - name: Typecheck
         if: "${{ inputs.workspace == '' }}"
         run: npm run build --if-present
