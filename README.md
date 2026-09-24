@@ -105,6 +105,11 @@ on the cycle branch keep their base. When `develop` did not move since the last 
 The merge queue on the cycle branches squashes, so the workflow pushes the merge itself with a GitHub App token. That
 app must be a bypass actor on the "Cycle branches" ruleset. It needs no access to `develop`.
 
+The job runs in the environment `cycle-merge`, and that is where the app's credentials live: the variable
+`CYCLE_MERGE_APP_CLIENT_ID` and the secret `CYCLE_MERGE_APP_PRIVATE_KEY`. Restrict the environment's deployment
+branches to `develop`. Never store the key as a repository secret: any workflow on any branch can read those, so every
+writer could push past the ruleset.
+
 Call it on a schedule from the default branch; scheduled workflows only run there.
 
 ```yaml
@@ -118,20 +123,12 @@ on:
 jobs:
   merge:
     uses: safeguardapp/reusable-workflows/.github/workflows/merge_develop_into_cycle.yml@main
-    with:
-      app_client_id: ${{ vars.CYCLE_MERGE_APP_CLIENT_ID }}
     secrets:
-      app_private_key: ${{ secrets.CYCLE_MERGE_APP_PRIVATE_KEY }}
       slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
-**Expected input:**
-
-* `app_client_id` client ID of the GitHub App that may push to the cycle branches
-
 **Expected secrets:**
 
-* `app_private_key` private key of that GitHub App
 * `slack_webhook` optional Slack incoming webhook for failures
 
 ### Merging a cycle branch back into develop
