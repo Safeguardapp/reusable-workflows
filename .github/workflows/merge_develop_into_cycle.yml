@@ -1,0 +1,82 @@
+name: Merge develop into cycle branches
+
+on:
+  workflow_call:
+    inputs:
+      app_client_id:
+        required: true
+        type: string
+    secrets:
+      app_private_key:
+        required: true
+      slack_webhook:
+        required: false
+
+jobs:
+  merge:
+    name: Merge develop into cycle branches
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # The merge queue on the cycle branches squashes, so the merge is pushed
+      # directly by an app that bypasses the "Cycle branches" ruleset (SG-10638).
+      - name: Create a token that bypasses the cycle branch ruleset
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ inputs.app_client_id }}
+          private-key: ${{ secrets.app_private_key }}
+          permission-contents: write
+
+      - name: Merge develop into every cycle branch that is not in develop yet
+        id: merge
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          conflicts=()
+
+          for branch in $(gh api "repos/$REPO/git/matching-refs/heads/cycle/" --jq '.[].ref | sub("^refs/heads/"; "")'); do
+            status=$(gh api "repos/$REPO/compare/develop...$branch" --jq .status)
+            if [ "$status" = behind ] || [ "$status" = identical ]; then
+              echo "$branch: already merged back into develop, skipping"
+              continue
+            fi
+
+            # Merge server side rather than cloning: 201 is a new merge commit,
+            # 204 means develop did not move since the last merge.
+            code=$(jq -n --arg base "$branch" --arg msg "Merge branch 'develop' into $branch" \
+                '{base: $base, head: "develop", commit_message: $msg}' \
+              | curl -sS -o response.json -w '%{http_code}' -X POST \
+                  -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                  --data @- "$GITHUB_API_URL/repos/$REPO/merges")
+
+            case "$code" in
+              201) echo "$branch: merged develop in $(jq -r .sha response.json)" ;;
+              204) echo "$branch: develop did not move, nothing to merge" ;;
+              409) echo "::error::$branch: develop does not merge cleanly, merge it by hand"; conflicts+=("$branch") ;;
+              *) echo "::error::$branch: GitHub answered $code"; cat response.json; exit 1 ;;
+            esac
+          done
+
+          echo "conflicts=${conflicts[*]}" >> "$GITHUB_OUTPUT"
+          [ ${#conflicts[@]} -eq 0 ]
+
+      - name: Notify Slack
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook }}
+          TEXT: >-
+            ${{ steps.merge.outputs.conflicts
+            && format('develop does not merge cleanly into *{0}* in {1}. Merge it by hand. {2}/{1}/actions/runs/{3}', steps.merge.outputs.conflicts, github.repository, github.server_url, github.run_id)
+            || format('Merging develop into the cycle branches failed in {0}. {1}/{0}/actions/runs/{2}', github.repository, github.server_url, github.run_id) }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "No slack_webhook passed, skipping the notification."
+            exit 0
+          fi
+          jq -n --arg text "$TEXT" \
+              '{username: "Cycle branch merge", icon_emoji: ":x:", attachments: [{color: "danger", text: $text}]}' \
+            | curl -sS -X POST -H 'Content-type: application/json' --data @- "$SLACK_WEBHOOK_URL"

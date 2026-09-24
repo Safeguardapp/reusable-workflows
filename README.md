@@ -11,6 +11,7 @@ can be made publicly accessible.
   + [codestyle](#codestyle)
   + [jira_handle_code_review](#jira_handle_code_review)
   + [jira_request_code_review](#jira_request_code_review)
+  + [merge_develop_into_cycle](#merge_develop_into_cycle)
   + [node_build](#node_build)
   + [node_test](#node_test)
   + [publish_package](#publish_package)
@@ -92,6 +93,53 @@ The workflow expects the following input.
 * `JIRA_BASE_URL` JIRA base url
 * `JIRA_USER_EMAIL` JIRA user email
 * `JIRA_API_TOKEN` JIRA user API token
+
+## merge_develop_into_cycle
+
+This workflow merges `develop` into every `cycle/*` branch that has not been merged back into `develop` yet, so fixes
+and tooling that land on `develop` reach the cycle branch without cherry-picks. It merges, never rebases, so open PRs
+on the cycle branch keep their base. When `develop` did not move since the last run nothing is committed. When
+`develop` does not merge cleanly the job fails and posts to Slack; merge it by hand as a repository admin
+(`git merge origin/develop` on the cycle branch, then push).
+
+The merge queue on the cycle branches squashes, so the workflow pushes the merge itself with a GitHub App token. That
+app must be a bypass actor on the "Cycle branches" ruleset. It needs no access to `develop`.
+
+Call it on a schedule from the default branch; scheduled workflows only run there.
+
+```yaml
+name: Merge develop into cycle branches
+
+on:
+  schedule:
+    - cron: "0 3 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  merge:
+    uses: safeguardapp/reusable-workflows/.github/workflows/merge_develop_into_cycle.yml@main
+    with:
+      app_client_id: ${{ vars.CYCLE_MERGE_APP_CLIENT_ID }}
+    secrets:
+      app_private_key: ${{ secrets.CYCLE_MERGE_APP_PRIVATE_KEY }}
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+**Expected input:**
+
+* `app_client_id` client ID of the GitHub App that may push to the cycle branches
+
+**Expected secrets:**
+
+* `app_private_key` private key of that GitHub App
+* `slack_webhook` optional Slack incoming webhook for failures
+
+### Merging a cycle branch back into develop
+
+The merge queue on `develop` squashes too, which would turn the whole cycle into one commit and cut the link to its
+PRs. Land a cycle branch on `develop` the way `acceptance` is merged back: a repository admin merges it with
+`git merge --no-ff origin/cycle/<name>` on `develop` and pushes directly, bypassing the queue. The `back-merge` skill
+does this with `--source cycle/<name>`. After that the cycle branch is part of `develop` and this workflow skips it.
 
 ## node_build
 
