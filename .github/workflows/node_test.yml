@@ -30,7 +30,7 @@ jobs:
             options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Callers that declare their Node version in .nvmrc get that version. The
       # ones without the file stay on 18.x until they add it.
@@ -43,7 +43,7 @@ jobs:
             echo "version=18.x" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ steps.node_version.outputs.version }}
           registry-url: "https://npm.pkg.github.com/"
