@@ -47,7 +47,9 @@ jobs:
 
       - name: Run lint in workspace ${{ inputs.workspace }}
         if: "${{ inputs.workspace != '' }}"
-        run: npm run lint -w ${{ inputs.workspace }}
+        env:
+          WORKSPACE: ${{ inputs.workspace }}
+        run: npm run lint -w "$WORKSPACE"
 
       # Typechecks wherever the caller's build runs tsc -b, which follows the
       # project references that tsc --noEmit per folder misses (SG-10371).
@@ -57,7 +59,9 @@ jobs:
 
       - name: Typecheck workspace ${{ inputs.workspace }}
         if: "${{ inputs.workspace != '' }}"
-        run: npm run build -w ${{ inputs.workspace }} --if-present
+        env:
+          WORKSPACE: ${{ inputs.workspace }}
+        run: npm run build -w "$WORKSPACE" --if-present
   prettier:
     name: Prettier
     runs-on: ubuntu-latest
