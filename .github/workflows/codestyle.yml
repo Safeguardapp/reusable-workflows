@@ -7,16 +7,15 @@ on:
         required: false
         type: string
     secrets:
+      # Unused. Stays declared until no caller passes it anymore (SG-11228).
       gh_package_registry_token:
-        required: true
+        required: false
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -34,8 +33,6 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ steps.node_version.outputs.version }}
-          registry-url: "https://npm.pkg.github.com/"
-          scope: "@safeguardapp"
           cache: 'npm'
 
       - name: Setup NPM
@@ -66,8 +63,6 @@ jobs:
     name: Prettier
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.gh_package_registry_token }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -85,8 +80,6 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ steps.node_version.outputs.version }}
-          registry-url: "https://npm.pkg.github.com/"
-          scope: "@safeguardapp"
           cache: 'npm'
 
       - name: Setup NPM
